@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using StructureMap;
 using WebApiSecurity.SecureWebApi.Filters;
+using WebApiSecurity.SecureWebApi.Middleware;
 
 namespace WebApiSecurity.SecureWebApi
 {
@@ -96,6 +97,7 @@ namespace WebApiSecurity.SecureWebApi
 
             app.UseAuthentication();
 
+            app.UseMiddleware(typeof(GlobalExceptionHandlerMiddleware));
             app.UseMvc();
         }
     }

@@ -42,7 +42,6 @@ namespace WebApiSecurity.SecureWebApi.Implementations
               signingCredentials: creds);
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
             return tokenString;
         }
     }
