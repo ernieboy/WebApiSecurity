@@ -28,15 +28,17 @@ namespace WebApiSecurity.SecureWebApi.Implementations
             {
                     new Claim(JwtRegisteredClaimNames.Sub, username),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("HasProtectedResourceAccessRights", bool.TrueString)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:SecretKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(_configuration["Tokens:Issuer"],
-              _configuration["Tokens:Issuer"],
+                                             _configuration["Tokens:Audience"],
               claims,
               expires: DateTime.Now.AddMinutes(30),
+              notBefore: DateTime.Now,
               signingCredentials: creds);
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);

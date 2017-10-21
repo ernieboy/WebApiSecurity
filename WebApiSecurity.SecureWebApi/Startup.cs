@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Text;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using StructureMap;
 
 namespace WebApiSecurity.SecureWebApi
@@ -21,6 +24,26 @@ namespace WebApiSecurity.SecureWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(cfg =>
+              {
+                  cfg.RequireHttpsMetadata = false;
+                  cfg.SaveToken = true;
+                  cfg.TokenValidationParameters = new TokenValidationParameters() {
+                      ValidIssuer = _configuration["Tokens:Issuer"],
+                      ValidAudience = _configuration["Tokens:Audience"],
+                      ValidateLifetime = true,
+                      ValidateIssuerSigningKey = true,
+                      ClockSkew = TimeSpan.Zero,
+                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:SecretKey"]))
+                  };
+
+              });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireProtectedResourceAccessRights", policy => policy.RequireClaim("HasProtectedResourceAccessRights", bool.TrueString));
+            });
             services.AddMvc();
             return ConfigureIoc(services);
 
@@ -66,6 +89,8 @@ namespace WebApiSecurity.SecureWebApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
 
             app.UseMvc();
         }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApiSecurity.SecureWebApi.Messages;
 using WebApiSecurity.SecureWebApi.Utilities;
@@ -40,6 +41,12 @@ namespace WebApiSecurity.SecureWebApi.Controllers
             return Content(result);
         }
 
+        [Authorize(Policy = "RequireProtectedResourceAccessRights")]
+        [HttpGet("protectedresouce")]
+        public IActionResult ProtectedResource()
+        {
+            return Json(new {Result = "Access Granted!"});
+        }
 
     }
 }
