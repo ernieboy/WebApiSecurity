@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebApiSecurity.SecureWebApi.Messages;
@@ -15,7 +16,7 @@ namespace WebApiSecurity.SecureWebApi.Controllers
 
 
         [HttpPost("gettoken")]
-        public IActionResult ExchangeUsernameAndPasswordForToken([FromBody]GetAuthenticationTokenRequest request)
+        public async Task<IActionResult> ExchangeUsernameAndPasswordForToken([FromBody]GetAuthenticationTokenRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -34,8 +35,9 @@ namespace WebApiSecurity.SecureWebApi.Controllers
                 var errors = Json(errorListAux);
                 return BadRequest(errors);
             }
-            var result = _mediator.Send(request);
-            return Ok(result);
+
+            var result = await _mediator.Send(request);
+            return Content(result);
         }
 
 
