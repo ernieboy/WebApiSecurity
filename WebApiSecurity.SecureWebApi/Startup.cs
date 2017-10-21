@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using StructureMap;
+using WebApiSecurity.SecureWebApi.Filters;
 
 namespace WebApiSecurity.SecureWebApi
 {
@@ -44,7 +45,10 @@ namespace WebApiSecurity.SecureWebApi
             {
                 options.AddPolicy("RequireProtectedResourceAccessRights", policy => policy.RequireClaim("HasProtectedResourceAccessRights", bool.TrueString));
             });
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ValidateModelStateAttribute());
+            });
             return ConfigureIoc(services);
 
         }

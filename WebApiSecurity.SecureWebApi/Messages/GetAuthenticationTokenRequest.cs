@@ -8,6 +8,7 @@ namespace WebApiSecurity.SecureWebApi.Messages
     {
 
         [Required]
+        [MaxLength(10)]
         public string Username { get; set; }
 
         [Required]
